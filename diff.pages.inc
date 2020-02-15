@@ -37,6 +37,11 @@ function diff_node_revisions($form, $form_state, $node) {
     '#type' => 'hidden',
     '#value' => $node->nid,
   );
+  
+  $form['help'] = array(
+    '#type' => 'help',
+    '#markup' => t('Revisions allow you to track differences between multiple versions of your content, and revert back to older versions.'),
+  );
 
   $revision_list = node_revision_list($node);
 
@@ -161,7 +166,9 @@ function diff_node_revisions_validate($form, &$form_state) {
 function diff_diffs_show($node, $old_vid, $new_vid, $state = NULL) {
   // Attaches the CSS.
   $build['#attached'] = diff_build_attachments();
-
+  $build['info'] = array(
+    '#markup' => t('<strong>Comparing two revisions:</strong>'),
+  );
   $default_state = config_get('diff.settings','diff_default_state_node');
   if (empty($state)) {
     $state = $default_state;
