@@ -477,13 +477,22 @@ function diff_compare_entities($left_entity, $right_entity, $context) {
 
   // One of the children has a #weight.
   if (!isset($diff['#sorted'])) {
-    uasort($diff, 'element_sort');
+    uasort($diff, '_element_sort');
   }
 
   // Process the array and get line counts per field.
   array_walk($diff, 'diff_process_state_lines');
 
   return $diff;
+}
+
+function _element_sort($a, $b) {
+  $a_weight = (is_array($a) && isset($a['#weight'])) ? $a['#weight'] : 0;
+  $b_weight = (is_array($b) && isset($b['#weight'])) ? $b['#weight'] : 0;
+  if ($a_weight == $b_weight) {
+    return 0;
+  }
+  return ($a_weight < $b_weight) ? -1 : 1;
 }
 
 function diff_process_state_lines(&$diff, $key) {
