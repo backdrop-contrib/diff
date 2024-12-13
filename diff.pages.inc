@@ -33,6 +33,7 @@ function diff_diffs_overview($node) {
  * Input form to select two revisions.
  */
 function diff_node_revisions($form, $form_state, $node) {
+  $form['#attached']['library'][] = array('diff', 'diff');
   $form['nid'] = array(
     '#type' => 'hidden',
     '#value' => $node->nid,
@@ -123,12 +124,15 @@ function diff_node_revisions($form, $form_state, $node) {
     '#default_value' => $new_vid,
   );
 
-  $form['submit'] = array('#type' => 'submit', '#value' => t('Compare'));
+  $form['actions']['#type'] = 'actions';
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Compare'),
+  );
 
   if (count($revision_list) > REVISION_LIST_SIZE) {
     $form['#suffix'] = theme('pager');
   }
-  $form['#attached'] = diff_build_attachments(TRUE);
   return $form;
 }
 
@@ -162,10 +166,11 @@ function diff_node_revisions_validate($form, &$form_state) {
  *   Version ID of the old revision.
  * @param integer $new_vid
  *   Version ID of the new revision.
+ * @param string $state
+ *   The type of revision to be shown. Either "raw" or "raw_plain".
  */
 function diff_diffs_show(Node $node, $old_vid, $new_vid, $state = '') {
-  // Attaches the CSS.
-  $build['#attached'] = diff_build_attachments();
+  $build['#attached']['library'][] = array('diff', 'diff');
   $build['info'] = array(
     '#markup' => '<strong>' . t('Comparing two revisions:') . '</strong>',
   );
@@ -204,14 +209,14 @@ function diff_diffs_show(Node $node, $old_vid, $new_vid, $state = '') {
   $nav_suffix = ($default_state != $state) ? '/' . str_replace('_', '-', $state) : '';
   $next_vid = _diff_get_next_vid($node_revisions, $new_vid);
   if ($next_vid) {
-    $next_link = l(t('Next difference >'), 'node/' . $node->nid . '/revisions/view/' . $new_vid . '/' . $next_vid . $nav_suffix, array('absolute' => 1));
+    $next_link = l(t('Next difference'), 'node/' . $node->nid . '/revisions/view/' . $new_vid . '/' . $next_vid . $nav_suffix, array('absolute' => 1));
   }
   else {
     $next_link = '';
   }
   $prev_vid = _diff_get_previous_vid($node_revisions, $old_vid);
   if ($prev_vid) {
-    $prev_link = l(t('< Previous difference'), 'node/' . $node->nid . '/revisions/view/' . $prev_vid . '/' . $old_vid . $nav_suffix, array('absolute' => 1));
+    $prev_link = l(t('Previous difference'), 'node/' . $node->nid . '/revisions/view/' . $prev_vid . '/' . $old_vid . $nav_suffix, array('absolute' => 1));
   }
   else {
     $prev_link = '';
@@ -314,9 +319,7 @@ function diff_entity_body_rows($entity_type, $left_entity, $right_entity, $conte
   // This is a unique index only, so no need for backdrop_static().
   static $table_row_counter = 0;
 
-  if ($theme = config_get('diff.settings','diff_theme')) {
-    backdrop_add_css(backdrop_get_path('module', 'diff') . "/css/diff.{$theme}.css");
-  }
+  backdrop_add_library('diff', 'diff');
 
   $rows = array();
   $any_visible_change = FALSE;

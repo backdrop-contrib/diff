@@ -18,7 +18,7 @@ function theme_diff_node_revisions($vars) {
   // Overview table:
   $header = array(
     t('Revision'),
-    array('data' => backdrop_render($form['submit']), 'colspan' => 2),
+    array('data' => backdrop_render($form['actions']), 'colspan' => 2),
     array('data' => t('Operations'), 'colspan' => 2),
   );
   if (isset($form['info']) && is_array($form['info'])) {
@@ -103,9 +103,7 @@ function theme_diff_empty_line($vars) {
  * Theme function for inline diff form.
  */
 function theme_diff_inline_form($vars) {
-  if ($theme = config_get('diff.settings','diff_theme')) {
-    backdrop_add_css(backdrop_get_path('module', 'diff') . "/css/diff.{$theme}.css");
-  }
+  backdrop_add_library('diff', 'diff');
   return backdrop_render_children($vars['form']);
 }
 
@@ -113,9 +111,7 @@ function theme_diff_inline_form($vars) {
  * Display inline diff metadata.
  */
 function theme_diff_inline_metadata($vars) {
-  if ($theme = config_get('diff.settings','diff_theme')) {
-    backdrop_add_css(backdrop_get_path('module', 'diff') . "/css/diff.{$theme}.css");
-  }
+  backdrop_add_library('diff', 'diff');
   $node = $vars['node'];
 
   $output = "<div class='diff-inline-metadata clear-block'>";

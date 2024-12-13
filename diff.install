@@ -146,3 +146,10 @@ function diff_update_1002() {
   }
   $config->save();
 }
+
+/**
+ * Set default values for config settings
+ */
+function diff_update_1003() {
+  config_clear('diff.settings', 'diff_theme');
+}
