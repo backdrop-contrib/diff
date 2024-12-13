@@ -37,7 +37,7 @@ define('DIFF_SORT_CUSTOM', '-1');
 function diff_available_states($entity_type = NULL) {
   $states = array(
     'raw' => t('Standard'),
-    'raw_plain' => t('Marked down'),
+    'rendered' => t('Rendered'),
   );
 
   return $states;
@@ -72,7 +72,7 @@ function diff_menu() {
     'access arguments' => array(1),
     'file' => 'diff.pages.inc',
   );
-  $items['node/%node/revisions/view'] = array(
+  $items['node/%node/revisions/view/%/%'] = array(
     'title' => 'Compare revisions',
     'page callback' => 'diff_diffs_show',
     'page arguments' => array(1, 4, 5, 6),
@@ -179,6 +179,7 @@ function diff_admin_paths_alter(&$paths) {
   // By default, treat all diff pages as administrative.
   if (config_get('diff.settings', 'diff_admin_path.node')) {
     $paths['node/*/revisions/view'] = TRUE;
+    $paths['node/*/revisions/view/*/*'] = TRUE;
   }
 }
 
@@ -278,6 +279,7 @@ function diff_block_save($delta = '', $edit = array()) {
  * Implements hook_block_view().
  */
 function diff_block_view($delta) {
+  /* @var Node $node */
   if ($delta === 'inline' && user_access('view revisions') && ($node = menu_get_object()) && arg(2) !== 'edit') {
     $enabled_types = config_get('diff.settings', 'diff_show_diff_inline_node_bundles');
     if (!empty($enabled_types[$node->type])) {
@@ -290,6 +292,7 @@ function diff_block_view($delta) {
       return $block;
     }
   }
+  return NULL;
 }
 
 /**
@@ -447,6 +450,34 @@ function diff_node_form_build_preview_changes($form, &$form_state) {
 }
 
 /**
+ * Implements hook_library_info().
+ */
+function diff_library_info() {
+  $diff_radio_behavior = config_get('diff.settings', 'diff_radio_behavior');
+  $libraries['diff'] = array(
+    'title' => 'Diff',
+    'css' => array(
+      backdrop_get_path('module', 'diff') . '/css/diff.css' => array(),
+    ),
+    'js' => array(
+      backdrop_get_path('module', 'diff') . '/js/diff.js' => array(),
+      array(
+        'data' => array('diffRevisionRadios' => $diff_radio_behavior),
+        'type' => 'setting',
+      ),
+    ),
+
+    // A full list of icons available from core can be found in the
+    // core/misc/icons directory.
+    'icons' => array(
+      'caret-left',
+      'caret-right',
+    ),
+  );
+  return $libraries;
+}
+
+/**
  * Implements hook_theme().
  */
 function diff_theme() {
@@ -553,7 +584,7 @@ function diff_inline_form($form, $form_state, $node, $revisions) {
   foreach ($revisions as $revision) {
     $form['revision']['#options'][$revision->vid] = t('@revision by @name', array(
       '@revision' => format_date($revision->timestamp, 'short'),
-      '@name' => format_username($revision),
+      '@name' => user_format_name($revision),
     ));
   }
   $form['submit'] = array(
@@ -605,30 +636,6 @@ function diff_filter_xss($string) {
 }
 
 /**
- * Helper function to load any CSS or JScript files required by a page or form.
- */
-function diff_build_attachments($jscript = FALSE) {
-  $attachments = array();
-  $theme = config_get('diff.settings', 'diff_theme');
-  if ($theme) {
-    $attachments['css'] = array(
-      backdrop_get_path('module', 'diff') . "/css/diff.{$theme}.css",
-    );
-  }
-  $type = config_get('diff.settings', 'diff_radio_behavior');
-  if ($jscript && $type) {
-    $attachments['js'] = array(
-      backdrop_get_path('module', 'diff') . "/js/diff.js",
-      array(
-        'data' => array('diffRevisionRadios' => $type),
-        'type' => 'setting',
-      ),
-    );
-  }
-  return $attachments;
-}
-
-/**
  * Implements hook_entity_diff() on behalf of the Node module.
  */
 function node_entity_diff($old_node, $new_node, $context) {
@@ -669,6 +676,7 @@ function node_entity_diff_options($entity_type) {
     }
     return $options;
   }
+  return NULL;
 }
 
 /**
@@ -704,6 +712,7 @@ function user_entity_diff_options($entity_type) {
     );
     return $options;
   }
+  return NULL;
 }
 
 

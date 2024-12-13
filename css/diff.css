@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Styles used when display a diff.
+ */
+
+table.diff {
+  border-spacing: 4px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Fix the display of multiple links within a single table header in Seven. */
+table.diff th a {
+  display: inline;
+}
+table.diff th {
+  text-transform: none;
+  width: 50%;
+}
+
+.diff tr.even, table.diff tr.odd {
+  background-color: inherit;
+  border: none;
+}
+[dir=ltr] .diff-prevlink,
+[dir=rtl] .diff-nextlink {
+  text-align: left;
+}
+[dir=ltr] .diff-nextlink,
+[dir=rtl] .diff-prevlink {
+  text-align: right;
+}
+[dir=ltr] .diff-prevlink a:before,
+[dir=rtl] .diff-nextlink a:after {
+  content: '';
+  background-image: var(--icon-caret-left);
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding-right: 0;
+  padding-left: 2em;
+}
+[dir=ltr] .diff-nextlink a:after,
+[dir=rtl] .diff-prevlink a:before {
+  content: '';
+  background-image: var(--icon-caret-right);
+  background-repeat: no-repeat;
+  background-position: center center;
+  padding-left: 0;
+  padding-right: 2em;
+}
+
+.diff-section-title, .diff-section-title {
+  background-color: #e9e8e8;
+  font-size: 0.83em;
+  font-weight: bold;
+  padding: 0.1em 1em;
+}
+
+.diff tr.odd,
+.diff tr.even {
+  border: 0;
+  box-shadow: none;
+}
+
+.diff td {
+  padding: .3em .5em;
+}
+.diff td.diff-context {
+  width: 50%;
+}
+
+/* Remove the default underline behavior of an ins tag. */
+.diff ins.diffchange {
+  text-decoration: none;
+}
+
+/* Diff revisions listing page. */
+.diff-revisions .form-actions {
+  margin: 0;
+}
+.diff-revisions .form-submit {
+  margin: 0;
+}

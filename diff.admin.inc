@@ -20,17 +20,6 @@ function diff_admin_settings($form, $form_state) {
     '#type' => 'help',
     '#markup' => $help_markup,
   );
-  $form['diff_theme'] = array(
-    '#type' => 'select',
-    '#title' => t('CSS options'),
-    '#default_value' => config_get('diff.settings','diff_theme'),
-    '#options' => array(
-      'default' => t('Classic'),
-      'boxes' => t('Boxes'),
-    ),
-    '#empty_option' => t('- None -'),
-    '#description' => t('Alter the CSS used when displaying diff results.'),
-  );
   $form['diff_radio_behavior'] = array(
     '#type' => 'select',
     '#title' => t('Diff radio behavior'),
@@ -74,7 +63,6 @@ function diff_admin_settings($form, $form_state) {
  */
 function diff_admin_settings_submit($form, &$form_state){
   $config = config('diff.settings');
-  $config->set('diff_theme', $form_state['values']['diff_theme']);
   $config->set('diff_radio_behavior', $form_state['values']['diff_radio_behavior']);
   $config->set('diff_context_lines_leading', $form_state['values']['diff_context_lines_leading']);
   $config->set('diff_context_lines_trailing', $form_state['values']['diff_context_lines_trailing']);

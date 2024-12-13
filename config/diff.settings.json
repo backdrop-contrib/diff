@@ -1,6 +1,5 @@
 {
     "_config_name": "diff.settings",
-    "diff_theme": "default",
     "diff_radio_behavior": "simple",
     "diff_context_lines_leading": "2",
     "diff_context_lines_trailing": "2",
